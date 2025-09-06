@@ -8,7 +8,6 @@ async function getDatabaseConnectionAsync(dbUri)
     async function getCollectionAsync(collectionName) {
         const db = client.db();
         const collection = db.collection(collectionName);
-        // await collection.createIndex({ uuid: 1 }, { unique: true });
         return collection;
     }
 
