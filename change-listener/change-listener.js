@@ -1,6 +1,7 @@
 require('dotenv').config();
-const {getDatabaseConnectionAsync} = require("./setup");
-const getRiderAndDriverData = require("./database");
+const {getDatabaseConnectionAsync} = require("./database/setup");
+const {getAssociatedRiderAndDriverData} = require("./database/database");
+
 const dbUri = process.env.MONGODB_URI;
 
 function createChangeListener()
@@ -23,16 +24,17 @@ function createChangeListener()
             ]
         );
 
-        const changeStream = rideRequestCollection.watch();
+        const rideRequestChangeStream = rideRequestCollection.watch();
 
-        changeStream.on('change', consumeChange);
+        rideRequestChangeStream.on('change', consumeChange);
 
         async function consumeChange(change) {
             if (change.operationType === "update") {
-                const update = change.updateDescription.updatedFields;
-                const {riderInfo, driverInfo} = await getRiderAndDriverData(rideRequestCollection, change.documentKey._id);
+                const changedDocumentKey = change.documentKey._id;
+                const changedFields = change.updateDescription.updatedFields;
+                const {riderData, driverData} = await getAssociatedRiderAndDriverData(rideRequestCollection, changedDocumentKey);
                 for (let subscriber of subscribers) {
-                    subscriber({update, riderInfo, driverInfo});
+                    subscriber({changedFields, riderData, driverData});
                 }
             }
         }

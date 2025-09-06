@@ -1,12 +1,12 @@
 const pipelineGenerators= {
-    getDriverAndRiderNameAndPhoneNumber: rideRequestDocumentId => [
+    getAssociatedDriverAndRiderNameAndPhoneNumber: rideRequestDocumentId => [
         // Get ride request document by document id
         {
             '$match' : {
                 '_id' : rideRequestDocumentId
             }
         },
-        // Aggregate name and phone number of associated rider
+        // Fetch name and phone number of associated rider(s)
         {
             '$lookup': {
                 'from': 'users',
@@ -16,7 +16,7 @@ const pipelineGenerators= {
                 'as': 'rider',
             }
         },
-        // Aggregate name and phone number of associated driver
+        // Fetch name and phone number of associated driver(s)
         {
             '$lookup': {
                 'from': 'service-providers',
