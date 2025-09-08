@@ -1,9 +1,9 @@
 const pipelineGenerators= {
-    getAssociatedDriverAndRiderNameAndPhoneNumber: rideRequestDocumentId => [
+    getAssociatedDriverAndRiderNameAndPhoneNumber: rideRequestKey => [
         // Get ride request document by document id
         {
             '$match' : {
-                '_id' : rideRequestDocumentId
+                '_id' : rideRequestKey
             }
         },
         // Fetch name and phone number of associated rider(s)
